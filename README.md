@@ -83,15 +83,6 @@ GoatGuard/
 │   ├── openclaw-client.ts        OpenClaw agent client
 │   └── public/
 │       └── index.html            Web UI (submit + pay + progress)
-├── scan-scripts/               Token security scanning toolkit (Python)
-│   ├── goplus_query.py           GoPlus API integration
-│   ├── evm_rpc_query.py          EVM on-chain data collection
-│   ├── solana_rpc_query.py       Solana chain queries
-│   ├── sui_rpc_query.py          Sui chain queries
-│   ├── pattern_scanner.py        Code pattern matching
-│   ├── scoring_system.py         Risk scoring logic
-│   ├── detect_chain.py           Auto chain detection
-│   └── tests/                    Unit tests
 ├── docs/
 │   └── audit-sop.md              Token security audit SOP
 ├── sample-reports/             Example audit outputs
@@ -115,7 +106,7 @@ GoatGuard/
 | On-chain Identity | ERC-8004 (AgentRegistry.sol) |
 | Smart Contracts | Solidity + Foundry |
 | Server | TypeScript + Express |
-| Scanning | Python (GoPlus API, RPC queries, pattern analysis) |
+| Scanning | OpenClaw Skill (`~/.openclaw/skills/contract-security-audit-skill/`) |
 | Delivery | Feishu (docs + bitable + webhook) + Email (nodemailer) |
 | Network | GOAT Network Testnet3 (Bitcoin L2) |
 
@@ -124,7 +115,6 @@ GoatGuard/
 ### Prerequisites
 
 - Node.js 18+
-- Python 3.10+
 - [Foundry](https://getfoundry.sh/)
 - MetaMask with GOAT Testnet3 configured
 
