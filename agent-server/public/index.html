@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoatGuard — AI Smart Contract Security Audit</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0b0f;--surface:#12141c;--surface2:#1a1d28;--border:#2a2d3a;
+  --text:#e4e6f0;--text2:#8b8fa4;--accent:#6c5ce7;--accent2:#a29bfe;
+  --green:#00b894;--red:#e17055;--orange:#fdcb6e;--blue:#74b9ff;
+  --radius:12px;--radius-lg:20px;
+}
+html{font-size:16px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  line-height:1.6;
+}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.page{
+  display:none;width:100%;max-width:680px;padding:24px 20px;
+  animation:fadeUp .4s ease;
+}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ===== Header ===== */
+header{
+  width:100%;padding:20px 24px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);max-width:680px;
+}
+.logo{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+.logo span{color:var(--accent2)}
+.tag{
+  font-size:.65rem;padding:2px 8px;border-radius:20px;
+  background:var(--accent);color:#fff;font-weight:600;margin-left:4px;
+}
+
+/* ===== Page 1: Landing ===== */
+.hero{text-align:center;padding:48px 0 32px}
+.hero h1{font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:12px}
+.hero h1 em{font-style:normal;color:var(--accent2)}
+.hero p{color:var(--text2);font-size:1.05rem;max-width:500px;margin:0 auto 32px}
+
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px}
+.feat{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;text-align:left;
+}
+.feat .icon{font-size:1.4rem;margin-bottom:6px}
+.feat h3{font-size:.9rem;font-weight:700;margin-bottom:4px}
+.feat p{font-size:.78rem;color:var(--text2);line-height:1.5}
+
+.flow{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-bottom:36px;text-align:left;
+}
+.flow h3{font-size:.85rem;font-weight:700;margin-bottom:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.steps{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.step-item{
+  background:var(--surface2);border-radius:8px;padding:8px 14px;
+  font-size:.8rem;font-weight:600;white-space:nowrap;
+}
+.step-arrow{color:var(--text2);font-size:.8rem}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 36px;border-radius:var(--radius);border:none;cursor:pointer;
+  font-size:1rem;font-weight:700;transition:all .2s;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent2);color:var(--accent2)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.pricing{
+  margin-top:16px;font-size:.8rem;color:var(--text2);
+}
+.pricing strong{color:var(--green)}
+
+/* ===== Page 2: Form ===== */
+.form-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:28px 24px;margin-bottom:20px;
+}
+.form-card h2{font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.form-card .sub{font-size:.82rem;color:var(--text2);margin-bottom:20px}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.8rem;font-weight:600;margin-bottom:6px;color:var(--text2)}
+.field label .req{color:var(--red);margin-left:2px}
+
+.input-group{position:relative}
+.input-group textarea,
+.input-group input{
+  width:100%;padding:12px 14px;border-radius:var(--radius);
+  border:1.5px solid var(--border);background:var(--bg);color:var(--text);
+  font-size:.9rem;font-family:inherit;transition:border-color .2s;
+}
+.input-group textarea{resize:vertical;min-height:100px;line-height:1.5}
+.input-group input:focus,
+.input-group textarea:focus{outline:none;border-color:var(--accent2)}
+.field .hint{font-size:.72rem;color:var(--text2);margin-top:6px}
+
+.input-examples{
+  display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;
+}
+.input-examples button{
+  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:4px 10px;font-size:.7rem;color:var(--text2);cursor:pointer;
+  font-family:inherit;transition:all .15s;
+}
+.input-examples button:hover{border-color:var(--accent2);color:var(--accent2)}
+
+.form-actions{display:flex;gap:12px;margin-top:24px}
+.form-actions .btn{flex:1}
+
+/* ===== Page 3: Result ===== */
+.result-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:28px 24px;text-align:center;margin-bottom:20px;
+}
+.result-icon{font-size:3rem;margin-bottom:12px}
+.result-card h2{font-size:1.2rem;font-weight:700;margin-bottom:8px}
+.result-card .desc{font-size:.88rem;color:var(--text2);margin-bottom:20px}
+
+.task-info{
+  background:var(--bg);border-radius:var(--radius);padding:16px;
+  text-align:left;margin-bottom:20px;
+}
+.task-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;font-size:.82rem;
+}
+.task-row .label{color:var(--text2)}
+.task-row .value{font-weight:600;font-family:'SF Mono',Monaco,monospace;font-size:.78rem}
+
+.progress-bar{
+  width:100%;height:6px;background:var(--surface2);border-radius:3px;
+  overflow:hidden;margin:16px 0;
+}
+.progress-bar .fill{
+  height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  border-radius:3px;transition:width .5s ease;
+}
+
+.status-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;
+}
+.status-scanning{background:rgba(108,92,231,.15);color:var(--accent2)}
+.status-completed{background:rgba(0,184,148,.15);color:var(--green)}
+.status-failed{background:rgba(225,112,85,.15);color:var(--red)}
+
+.findings-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0;
+}
+.finding-cell{
+  background:var(--bg);border-radius:8px;padding:10px 6px;text-align:center;
+}
+.finding-cell .num{font-size:1.3rem;font-weight:800}
+.finding-cell .sev{font-size:.65rem;color:var(--text2);margin-top:2px}
+.sev-c{color:var(--red)}.sev-h{color:var(--orange)}.sev-m{color:#fdcb6e}
+.sev-l{color:var(--blue)}.sev-i{color:var(--text2)}
+
+.report-link{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);border:1.5px solid var(--green);border-radius:var(--radius);
+  padding:14px 18px;margin-top:16px;text-align:left;
+  transition:all .2s;cursor:pointer;text-decoration:none;
+}
+.report-link:hover{background:rgba(0,184,148,.08);transform:translateY(-1px);text-decoration:none}
+.report-link .icon{font-size:1.3rem}
+.report-link .info{flex:1}
+.report-link .info .title{font-size:.85rem;font-weight:600;color:var(--green)}
+.report-link .info .url{font-size:.72rem;color:var(--text2);word-break:break-all}
+
+.result-actions{display:flex;gap:12px;margin-top:24px;justify-content:center}
+
+/* ===== Spinner ===== */
+.spinner{
+  display:inline-block;width:18px;height:18px;
+  border:2.5px solid var(--border);border-top-color:var(--accent2);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 20px;font-size:.82rem;z-index:100;
+  animation:fadeUp .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* ===== Responsive ===== */
+@media(max-width:520px){
+  .features{grid-template-columns:1fr}
+  .steps{flex-direction:column;gap:4px}
+  .step-arrow{transform:rotate(90deg)}
+  .findings-grid{grid-template-columns:repeat(3,1fr)}
+  .form-actions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🐐 Goat<span>Guard</span></div>
+  <span class="tag">GOAT Network</span>
+</header>
+
+<!-- ==================== PAGE 1: Landing ==================== -->
+<div class="page active" id="page-landing">
+  <div class="hero">
+    <h1>AI-Powered <em>Smart Contract</em> Security Audit</h1>
+    <p>Submit a contract address or GitHub link, pay with x402, and receive a professional security audit report in minutes.</p>
+  </div>
+
+  <div class="features">
+    <div class="feat">
+      <div class="icon">🔍</div>
+      <h3>Multi-Source Input</h3>
+      <p>Contract address, Etherscan link, GitHub URL — AI auto-parses any input.</p>
+    </div>
+    <div class="feat">
+      <div class="icon">⚡</div>
+      <h3>Fast &amp; Thorough</h3>
+      <p>GoPlus detection + static analysis + AI code review. ~5 min per scan.</p>
+    </div>
+    <div class="feat">
+      <div class="icon">💰</div>
+      <h3>x402 Payment</h3>
+      <p>HTTP-native stablecoin micropayment. Pay only for what you scan.</p>
+    </div>
+    <div class="feat">
+      <div class="icon">📄</div>
+      <h3>Structured Reports</h3>
+      <p>3-tier reports: Risk Summary, Full Assessment, and Audit Checklist.</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <h3>How It Works</h3>
+    <div class="steps">
+      <div class="step-item">📝 Submit</div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">💳 Pay</div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">🤖 AI Audit</div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">📧 Report</div>
+    </div>
+  </div>
+
+  <div style="text-align:center">
+    <button class="btn btn-primary" onclick="goToPage('form')">Start Audit →</button>
+    <div class="pricing">Powered by <strong>GOAT Network</strong> · ERC-8004 Verified Agent</div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 2: Form ==================== -->
+<div class="page" id="page-form">
+  <div class="form-card">
+    <h2>🔐 Submit Audit Request</h2>
+    <p class="sub">Provide the contract information and your email. We'll send the report directly to you.</p>
+
+    <div class="field">
+      <label>Contract Target<span class="req">*</span></label>
+      <div class="input-group">
+        <textarea id="input-targets" placeholder="Enter contract address, GitHub URL, or Etherscan link...&#10;&#10;Supports multiple targets, one per line."></textarea>
+      </div>
+      <div class="hint">Accepted: 0x address · Etherscan/Explorer link · GitHub file/repo URL · Any text</div>
+      <div class="input-examples">
+        <button onclick="fillExample('etherscan')">Etherscan Link</button>
+        <button onclick="fillExample('github')">GitHub URL</button>
+        <button onclick="fillExample('address')">0x Address</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Email<span class="req">*</span></label>
+      <div class="input-group">
+        <input type="email" id="input-email" placeholder="your@email.com — report will be sent here">
+      </div>
+      <div class="hint">We'll notify you when the scan starts and send the full report upon completion.</div>
+    </div>
+  </div>
+
+  <div class="form-card" id="payment-card">
+    <h2>💳 Payment</h2>
+    <p class="sub">Connect your wallet and pay on GOAT Testnet3 to start the audit.</p>
+
+    <div id="wallet-disconnected">
+      <button class="btn btn-primary" style="width:100%" onclick="connectWallet()">
+        🦊 Connect Wallet
+      </button>
+      <div class="hint" style="margin-top:8px;text-align:center">MetaMask or any EIP-1193 wallet</div>
+    </div>
+
+    <div id="wallet-connected" style="display:none">
+      <div class="task-info">
+        <div class="task-row">
+          <span class="label">Wallet</span>
+          <span class="value" id="wallet-addr" style="color:var(--accent2)">—</span>
+        </div>
+        <div class="task-row">
+          <span class="label">Network</span>
+          <span class="value" id="wallet-network">—</span>
+        </div>
+        <div class="task-row">
+          <span class="label">Balance</span>
+          <span class="value" id="wallet-balance">—</span>
+        </div>
+        <div class="task-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+          <span class="label">Audit Fee</span>
+          <span class="value" style="color:var(--green);font-size:.9rem">0.000001 BTC</span>
+        </div>
+        <div class="task-row">
+          <span class="label">Pay To (Agent)</span>
+          <span class="value" style="font-size:.68rem" id="pay-to-addr">—</span>
+        </div>
+        <div class="task-row">
+          <span class="label">Protocol</span>
+          <span class="value">x402</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="tx-status" style="display:none;margin-top:12px">
+      <div class="task-info">
+        <div class="task-row">
+          <span class="label">Tx Hash</span>
+          <span class="value" id="tx-hash" style="font-size:.68rem;color:var(--green)">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-outline" onclick="goToPage('landing')">← Back</button>
+    <button class="btn btn-primary" id="btn-submit" onclick="submitAudit()" disabled>
+      Connect Wallet First
+    </button>
+  </div>
+</div>
+
+<!-- ==================== PAGE 3: Result ==================== -->
+<div class="page" id="page-result">
+  <div class="result-card" id="result-scanning">
+    <div class="result-icon">🤖</div>
+    <h2>Audit In Progress</h2>
+    <p class="desc">AI Agent is analyzing the contract. This usually takes 5–10 minutes.</p>
+
+    <div class="progress-bar"><div class="fill" id="progress-fill" style="width:10%"></div></div>
+    <span class="status-badge status-scanning"><span class="spinner"></span> Scanning...</span>
+
+    <div class="task-info" style="margin-top:20px">
+      <div class="task-row">
+        <span class="label">Task ID</span>
+        <span class="value" id="res-taskid">—</span>
+      </div>
+      <div class="task-row">
+        <span class="label">Target</span>
+        <span class="value" id="res-target" style="font-size:.72rem;max-width:300px;overflow:hidden;text-overflow:ellipsis">—</span>
+      </div>
+      <div class="task-row">
+        <span class="label">Progress</span>
+        <span class="value" id="res-progress" style="color:var(--accent2)">Starting...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-done" style="display:none">
+    <div class="result-icon" id="done-icon">✅</div>
+    <h2 id="done-title">Audit Complete</h2>
+    <p class="desc" id="done-desc">—</p>
+
+    <div style="margin-bottom:12px">
+      <span class="status-badge" id="done-badge">—</span>
+    </div>
+
+    <div class="findings-grid" id="findings-grid"></div>
+
+    <div class="task-info">
+      <div class="task-row">
+        <span class="label">Contract</span>
+        <span class="value" id="done-contract">—</span>
+      </div>
+      <div class="task-row">
+        <span class="label">Risk Level</span>
+        <span class="value" id="done-risk">—</span>
+      </div>
+      <div class="task-row">
+        <span class="label">Completed</span>
+        <span class="value" id="done-time">—</span>
+      </div>
+    </div>
+
+    <a class="report-link" id="report-link" href="#" target="_blank" style="display:none">
+      <div class="icon">📄</div>
+      <div class="info">
+        <div class="title">View Full Report</div>
+        <div class="url" id="report-url">—</div>
+      </div>
+      <div style="color:var(--text2)">↗</div>
+    </a>
+  </div>
+
+  <div class="result-card" id="result-failed" style="display:none">
+    <div class="result-icon">❌</div>
+    <h2>Audit Failed</h2>
+    <p class="desc" id="fail-reason">An unexpected error occurred.</p>
+  </div>
+
+  <div class="result-actions">
+    <button class="btn btn-outline" onclick="resetAndGoHome()">← New Audit</button>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+const GOAT_TESTNET3 = {
+  chainId: '0xBEB0',
+  chainName: 'GOAT Testnet3',
+  rpcUrls: ['https://rpc.testnet3.goat.network'],
+  blockExplorerUrls: ['https://explorer.testnet3.goat.network'],
+  nativeCurrency: { name: 'BTC', symbol: 'BTC', decimals: 18 },
+};
+const AUDIT_FEE_WEI = '0xE8D4A51000'; // 0.000001 BTC = 1000000000000 wei
+const AUDIT_FEE_DISPLAY = '0.000001 BTC';
+
+let currentTaskId = null;
+let pollTimer = null;
+let walletAddress = null;
+let paymentTxHash = null;
+let agentWallet = null;
+
+// fetch agent wallet from health endpoint
+fetch(API + '/.well-known/agent-registration.json').then(r=>r.json()).then(d=>{
+  agentWallet = d.payment?.payTo || d.endpoints?.submit?.match(/localhost/)?null:null;
+}).catch(()=>{});
+fetch(API + '/health').then(r=>r.json()).then(d=>{
+  // also try from 402 response
+}).catch(()=>{});
+
+function goToPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function fillExample(type) {
+  const ta = document.getElementById('input-targets');
+  const examples = {
+    etherscan: 'https://etherscan.io/token/0x37611b28aca5673744161dc337128cfdd2657f69',
+    github: 'https://github.com/OpenZeppelin/ethernaut/blob/master/contracts/src/levels/Delegation.sol',
+    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  };
+  ta.value = examples[type] || '';
+  ta.focus();
+}
+
+function showToast(msg, isError) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.className = 'toast' + (isError ? ' error' : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+function shortAddr(addr) {
+  return addr ? addr.slice(0,6) + '...' + addr.slice(-4) : '—';
+}
+
+async function connectWallet() {
+  if (!window.ethereum) {
+    showToast('Please install MetaMask or an EIP-1193 wallet.', true);
+    return;
+  }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    walletAddress = accounts[0];
+
+    // switch to GOAT Testnet3
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: GOAT_TESTNET3.chainId }],
+      });
+    } catch (switchErr) {
+      if (switchErr.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [GOAT_TESTNET3],
+        });
+      } else {
+        throw switchErr;
+      }
+    }
+
+    // fetch balance
+    const bal = await window.ethereum.request({
+      method: 'eth_getBalance',
+      params: [walletAddress, 'latest'],
+    });
+    const balEth = parseInt(bal, 16) / 1e18;
+
+    // fetch agent wallet from 402
+    if (!agentWallet) {
+      try {
+        const r402 = await fetch(API + '/api/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inputs: ['test'] }),
+        });
+        const d402 = await r402.json();
+        if (d402.accepts?.[0]?.payTo) agentWallet = d402.accepts[0].payTo;
+      } catch {}
+    }
+
+    document.getElementById('wallet-disconnected').style.display = 'none';
+    document.getElementById('wallet-connected').style.display = '';
+    document.getElementById('wallet-addr').textContent = shortAddr(walletAddress);
+    document.getElementById('wallet-network').textContent = 'GOAT Testnet3';
+    document.getElementById('wallet-balance').textContent = balEth.toFixed(6) + ' BTC';
+    document.getElementById('pay-to-addr').textContent = agentWallet ? shortAddr(agentWallet) : 'auto';
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = false;
+    btn.innerHTML = '💳 Pay ' + AUDIT_FEE_DISPLAY + ' &amp; Start Audit';
+
+    showToast('Wallet connected: ' + shortAddr(walletAddress));
+  } catch (err) {
+    showToast('Wallet connection failed: ' + (err.message || err), true);
+  }
+}
+
+async function sendPayment() {
+  if (!walletAddress) throw new Error('Wallet not connected');
+
+  const toAddr = agentWallet || '0xe6C6768812d6aDAe1a6c64C20C7Fe4e76C3718F9';
+
+  const txHash = await window.ethereum.request({
+    method: 'eth_sendTransaction',
+    params: [{
+      from: walletAddress,
+      to: toAddr,
+      value: AUDIT_FEE_WEI,
+      gas: '0x5208', // 21000
+    }],
+  });
+
+  return txHash;
+}
+
+async function submitAudit() {
+  const raw = document.getElementById('input-targets').value.trim();
+  const email = document.getElementById('input-email').value.trim();
+
+  if (!raw) { showToast('Please enter at least one contract target.', true); return; }
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email address.', true); return; }
+  if (!walletAddress) { showToast('Please connect your wallet first.', true); return; }
+
+  const inputs = raw.split('\n').map(s => s.trim()).filter(Boolean);
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+
+  // Step 1: on-chain payment
+  btn.innerHTML = '<span class="spinner"></span> Confirm in wallet...';
+  try {
+    paymentTxHash = await sendPayment();
+  } catch (err) {
+    showToast('Payment rejected: ' + (err.message || 'User denied'), true);
+    btn.disabled = false;
+    btn.innerHTML = '💳 Pay ' + AUDIT_FEE_DISPLAY + ' &amp; Start Audit';
+    return;
+  }
+
+  // show tx hash
+  document.getElementById('tx-status').style.display = '';
+  document.getElementById('tx-hash').textContent = shortAddr(paymentTxHash);
+
+  // Step 2: submit audit with tx hash as payment proof
+  btn.innerHTML = '<span class="spinner"></span> Submitting audit...';
+  try {
+    const resp = await fetch(API + '/api/audit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-PAYMENT': paymentTxHash,
+      },
+      body: JSON.stringify({ inputs, email }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok && resp.status !== 402) {
+      showToast(data.error || 'Submission failed.', true);
+      btn.disabled = false;
+      btn.innerHTML = '💳 Pay ' + AUDIT_FEE_DISPLAY + ' &amp; Start Audit';
+      return;
+    }
+
+    if (resp.status === 402) {
+      showToast('Payment verification failed. Please try again.', true);
+      btn.disabled = false;
+      btn.innerHTML = '💳 Pay ' + AUDIT_FEE_DISPLAY + ' &amp; Start Audit';
+      return;
+    }
+
+    currentTaskId = data.taskId;
+    document.getElementById('res-taskid').textContent = data.taskId;
+    document.getElementById('res-target').textContent = inputs[0].slice(0, 60) + (inputs[0].length > 60 ? '...' : '');
+    document.getElementById('res-progress').textContent = 'Starting...';
+
+    document.getElementById('result-scanning').style.display = '';
+    document.getElementById('result-done').style.display = 'none';
+    document.getElementById('result-failed').style.display = 'none';
+    document.getElementById('progress-fill').style.width = '10%';
+
+    goToPage('result');
+    startPolling();
+
+  } catch (err) {
+    showToast('Network error: ' + err.message, true);
+    btn.disabled = false;
+    btn.innerHTML = '💳 Pay ' + AUDIT_FEE_DISPLAY + ' &amp; Start Audit';
+  }
+}
+
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  let ticks = 0;
+  pollTimer = setInterval(async () => {
+    ticks++;
+    try {
+      const resp = await fetch(API + '/api/audit/' + currentTaskId);
+      const data = await resp.json();
+
+      if (data.status === 'scanning') {
+        const pct = Math.min(10 + ticks * 3, 90);
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('res-progress').textContent = data.progress || 'Scanning...';
+      }
+
+      if (data.status === 'completed') {
+        clearInterval(pollTimer);
+        showCompleted(data);
+      }
+
+      if (data.status === 'failed') {
+        clearInterval(pollTimer);
+        showFailed(data.progress || 'Audit failed.');
+      }
+    } catch (err) {
+      console.warn('Poll error:', err);
+    }
+  }, 5000);
+}
+
+function showCompleted(data) {
+  document.getElementById('result-scanning').style.display = 'none';
+  document.getElementById('result-done').style.display = '';
+
+  const riskColors = {
+    Critical: 'var(--red)', High: 'var(--orange)', Medium: '#fdcb6e',
+    Low: 'var(--blue)', Safe: 'var(--green)', Unknown: 'var(--text2)',
+  };
+  const riskColor = riskColors[data.riskLevel] || 'var(--text2)';
+
+  document.getElementById('done-icon').textContent = data.riskLevel === 'Safe' ? '✅' : data.riskLevel === 'Critical' ? '🚨' : '⚠️';
+  document.getElementById('done-title').textContent = 'Audit Complete — ' + (data.contractName || 'Contract');
+  document.getElementById('done-desc').textContent = 'Risk Level: ' + (data.riskLevel || 'Unknown');
+
+  const badge = document.getElementById('done-badge');
+  badge.textContent = data.riskLevel || 'Unknown';
+  badge.className = 'status-badge';
+  badge.style.cssText = 'background:' + riskColor + '22;color:' + riskColor;
+
+  const grid = document.getElementById('findings-grid');
+  const findings = data.findings || [];
+  const counts = { Critical: 0, High: 0, Medium: 0, Low: 0, Info: 0 };
+  findings.forEach(f => { if (counts[f.severity] !== undefined) counts[f.severity]++; });
+
+  grid.innerHTML = [
+    ['Critical', 'sev-c'], ['High', 'sev-h'], ['Medium', 'sev-m'], ['Low', 'sev-l'], ['Info', 'sev-i']
+  ].map(([s, cls]) =>
+    '<div class="finding-cell"><div class="num ' + cls + '">' + counts[s] + '</div><div class="sev">' + s + '</div></div>'
+  ).join('');
+
+  document.getElementById('done-contract').textContent = data.contractName || '—';
+  document.getElementById('done-risk').textContent = data.riskLevel || '—';
+  document.getElementById('done-risk').style.color = riskColor;
+  document.getElementById('done-time').textContent = data.completedAt ? new Date(data.completedAt).toLocaleString() : '—';
+
+  if (data.reportUrl) {
+    const link = document.getElementById('report-link');
+    link.href = data.reportUrl;
+    link.style.display = 'flex';
+    document.getElementById('report-url').textContent = data.reportUrl;
+  }
+}
+
+function showFailed(reason) {
+  document.getElementById('result-scanning').style.display = 'none';
+  document.getElementById('result-failed').style.display = '';
+  document.getElementById('fail-reason').textContent = reason;
+}
+
+function resetAndGoHome() {
+  if (pollTimer) clearInterval(pollTimer);
+  currentTaskId = null;
+  document.getElementById('input-targets').value = '';
+  document.getElementById('input-email').value = '';
+  goToPage('landing');
+}
+</script>
+</body>
+</html>

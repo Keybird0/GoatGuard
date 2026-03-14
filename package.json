@@ -1,0 +1,30 @@
+{
+  "name": "goat-agent-hackathon",
+  "version": "1.0.0",
+  "description": "GOAT Network Hackathon - AI Agent with x402 Payment & ERC-8004 Identity",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch agent-server/server.ts",
+    "forge:build": "forge build",
+    "forge:test": "forge test -vvv",
+    "forge:deploy": "source .env && forge script script/Deploy.s.sol --rpc-url $GOAT_RPC_URL --broadcast -vvvv"
+  },
+  "dependencies": {
+    "@x402/core": "latest",
+    "@x402/evm": "latest",
+    "@x402/express": "latest",
+    "8004sdk": "latest",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "express": "^4.21.0",
+    "nodemailer": "^8.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/nodemailer": "^7.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
