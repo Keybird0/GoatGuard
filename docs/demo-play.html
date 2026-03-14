@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoatGuard — GOAT Network AI Security Audit Agent</title>
+
+    <!-- Fonts: Clash Display + Satoshi (Fontshare), Noto Sans SC + JetBrains Mono (Google) -->
+    <link rel="preconnect" href="https://api.fontshare.com">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — CYBER SECURITY THEME
+           =========================================== */
+        :root {
+            --bg-deep: #060a14;
+            --bg-primary: #0a1628;
+            --bg-card: rgba(17, 29, 53, 0.8);
+            --bg-card-solid: #111d35;
+            --bg-card-hover: #162445;
+            --border-subtle: rgba(0, 212, 255, 0.1);
+            --border-active: rgba(0, 212, 255, 0.3);
+
+            --accent-cyan: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f97316;
+
+            --text-primary: #e8edf5;
+            --text-secondary: #7a8ba8;
+            --text-dim: #4a5568;
+
+            --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.25);
+            --glow-purple: 0 0 20px rgba(139, 92, 246, 0.25);
+
+            --font-display: 'Clash Display', 'Noto Sans SC', sans-serif;
+            --font-body: 'Satoshi', 'Noto Sans SC', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(2rem, 6vw, 4.5rem);
+            --h2-size: clamp(1.4rem, 3.5vw, 2.8rem);
+            --h3-size: clamp(1rem, 2vw, 1.5rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.1rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --caption-size: clamp(0.6rem, 0.9vw, 0.8rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.75rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           RESET & BASE
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===========================================
+           VIEWPORT FITTING — MANDATORY BASE STYLES
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: var(--body-size);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        /* ===========================================
+           GLOBAL BACKGROUND — GRID + GRADIENT MESH
+           =========================================== */
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0, 212, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.025) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 10%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 90%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 600; }
+
+        h1 { font-size: var(--title-size); line-height: 1.1; letter-spacing: -0.02em; }
+        h2 { font-size: var(--h2-size); line-height: 1.2; letter-spacing: -0.01em; }
+        h3 { font-size: var(--h3-size); line-height: 1.3; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s ease-in-out infinite;
+        }
+
+        .mono { font-family: var(--font-mono); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-cyan { color: var(--accent-cyan); }
+        .text-purple { color: var(--accent-purple); }
+        .text-amber { color: var(--accent-amber); }
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            z-index: 9999;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover { background: var(--text-secondary); }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--caption-size);
+            color: var(--text-dim);
+            z-index: 9998;
+            letter-spacing: 0.05em;
+        }
+
+        .counter-current { color: var(--accent-cyan); }
+
+        /* ===========================================
+           BRAND BADGE (top-left on non-title slides)
+           =========================================== */
+        .brand-badge {
+            position: absolute;
+            top: clamp(12px, 2vw, 24px);
+            left: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 600;
+            color: var(--text-dim);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .brand-badge .goat-icon { font-size: clamp(0.7rem, 1.2vw, 1rem); }
+
+        /* ===========================================
+           ANIMATIONS — REVEAL SYSTEM
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.15s; }
+        .reveal:nth-child(3) { transition-delay: 0.25s; }
+        .reveal:nth-child(4) { transition-delay: 0.35s; }
+        .reveal:nth-child(5) { transition-delay: 0.45s; }
+        .reveal:nth-child(6) { transition-delay: 0.55s; }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 200% center; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.3); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes scan-line {
+            0% { top: -5%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 105%; opacity: 0; }
+        }
+
+        /* ===========================================
+           SLIDE 1 — TITLE HERO
+           =========================================== */
+        .title-slide { background: var(--bg-deep); }
+
+        .title-slide .slide-content {
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+        }
+
+        .hero-icon {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .hero-icon::after {
+            content: '';
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            animation: pulse-glow 2.5s ease-in-out infinite;
+        }
+
+        .title-slide h1 {
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            font-size: clamp(0.85rem, 1.8vw, 1.3rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: clamp(0.5rem, 1vw, 0.75rem);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .badge {
+            font-family: var(--font-mono);
+            font-size: var(--caption-size);
+            padding: clamp(3px, 0.4vw, 5px) clamp(8px, 1vw, 14px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            background: rgba(0, 212, 255, 0.04);
+        }
+
+        .keyboard-hint {
+            position: absolute;
+            bottom: clamp(16px, 3vw, 32px);
+            font-size: var(--caption-size);
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            animation: float 3s ease-in-out infinite 1s;
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--accent-cyan) 30%, var(--accent-cyan) 70%, transparent 100%);
+            opacity: 0.4;
+            z-index: 1;
+            animation: scan-line 6s linear infinite;
+            pointer-events: none;
+        }
+
+        /* ===========================================
+           SLIDE 2 — PROBLEM
+           =========================================== */
+        .problem-slide .slide-content {
+            gap: var(--content-gap);
+            max-width: min(85vw, 800px);
+            margin: 0 auto;
+        }
+
+        .problem-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.6rem, 1.5vh, 1.2rem);
+            text-align: left;
+            width: 100%;
+        }
+
+        .problem-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: clamp(0.5rem, 1vw, 0.75rem);
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .problem-list li .icon {
+            flex-shrink: 0;
+            font-size: clamp(1rem, 1.5vw, 1.3rem);
+            margin-top: 1px;
+        }
+
+        .problem-list li strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ===========================================
+           SLIDE 3 — SOLUTION (3 CARDS)
+           =========================================== */
+        .solution-slide .slide-content {
+            gap: var(--content-gap);
+        }
+
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+            max-width: min(90vw, 900px);
+            width: 100%;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 0.8vw, 0.6rem);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-active);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .feature-card .card-icon {
+            font-size: clamp(1.3rem, 2.5vw, 2rem);
+        }
+
+        .feature-card h3 {
+            font-size: clamp(0.85rem, 1.5vw, 1.15rem);
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+
+        .card-accent-cyan { border-top: 2px solid var(--accent-cyan); }
+        .card-accent-amber { border-top: 2px solid var(--accent-amber); }
+        .card-accent-purple { border-top: 2px solid var(--accent-purple); }
+
+        /* ===========================================
+           SLIDE 4 — HOW IT WORKS (4 STEPS)
+           =========================================== */
+        .flow-slide .slide-content {
+            gap: var(--content-gap);
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(0.3rem, 1vw, 1rem);
+            flex-wrap: nowrap;
+            max-width: min(95vw, 950px);
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(0.2rem, 0.5vw, 0.4rem);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: clamp(0.6rem, 1.5vw, 1.2rem) clamp(0.5rem, 1.2vw, 1rem);
+            min-width: clamp(80px, 14vw, 160px);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .flow-step:hover {
+            border-color: var(--border-active);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .flow-step .step-num {
+            font-family: var(--font-mono);
+            font-size: var(--caption-size);
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .flow-step .step-icon {
+            font-size: clamp(1.3rem, 2.5vw, 2rem);
+        }
+
+        .flow-step .step-label {
+            font-family: var(--font-display);
+            font-size: clamp(0.75rem, 1.2vw, 1rem);
+            font-weight: 600;
+        }
+
+        .flow-step .step-desc {
+            font-size: var(--caption-size);
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+            color: var(--accent-cyan);
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+
+        /* ===========================================
+           AUDIT ENGINE CAPABILITY SLIDE
+           =========================================== */
+        .capability-blocks {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 1.2vh, 0.9rem);
+            max-width: min(90vw, 850px);
+            width: 100%;
+        }
+
+        .capability-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: clamp(0.6rem, 1.5vw, 1.1rem) clamp(0.75rem, 1.8vw, 1.3rem);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.25rem, 0.5vw, 0.4rem);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .capability-block:hover {
+            border-color: var(--border-active);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .cap-header {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.3rem, 0.6vw, 0.5rem);
+        }
+
+        .cap-header .cap-icon {
+            font-size: clamp(1rem, 1.5vw, 1.3rem);
+        }
+
+        .cap-header h3 {
+            font-size: clamp(0.85rem, 1.3vw, 1.1rem);
+            font-weight: 600;
+        }
+
+        .pills-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(0.2rem, 0.4vw, 0.35rem);
+        }
+
+        .pill {
+            font-family: var(--font-mono);
+            font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+            padding: clamp(2px, 0.3vw, 4px) clamp(6px, 0.8vw, 10px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            background: rgba(0, 212, 255, 0.04);
+            white-space: nowrap;
+        }
+
+        .pill-chain { border-color: rgba(16, 185, 129, 0.35); color: var(--accent-green); }
+        .pill-engine { border-color: rgba(0, 212, 255, 0.2); }
+        .pill-ai {
+            border-color: rgba(139, 92, 246, 0.35);
+            color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.06);
+            font-weight: 500;
+        }
+
+        .cap-note {
+            font-size: var(--caption-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: clamp(0.3rem, 0.5vw, 0.4rem);
+            flex-wrap: wrap;
+        }
+
+        .cap-note strong { color: var(--text-primary); font-weight: 500; }
+
+        .block-accent-green { border-left: 3px solid var(--accent-green); }
+        .block-accent-cyan { border-left: 3px solid var(--accent-cyan); }
+        .block-accent-amber { border-left: 3px solid var(--accent-amber); }
+
+        /* ===========================================
+           IMAGE SLIDES (Demo Screenshots)
+           =========================================== */
+        .image-slide .slide-content {
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        .image-slide h2 {
+            font-size: clamp(1.2rem, 2.8vw, 2rem);
+        }
+
+        .image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-image {
+            max-width: min(85vw, 750px);
+            max-height: min(58vh, 480px);
+            object-fit: contain;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.12);
+            box-shadow:
+                0 4px 30px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(0, 212, 255, 0.08);
+            transition: box-shadow 0.4s ease;
+        }
+
+        .slide-image:hover {
+            box-shadow:
+                0 8px 40px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(0, 212, 255, 0.15);
+        }
+
+        .caption {
+            font-size: var(--small-size);
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        /* ===========================================
+           SLIDE 11 — TECH STACK (6 CARDS GRID)
+           =========================================== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.5rem, 1.2vw, 0.8rem);
+            max-width: min(90vw, 850px);
+            width: 100%;
+        }
+
+        .tech-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: clamp(0.6rem, 1.5vw, 1rem);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.2rem, 0.4vw, 0.35rem);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tech-card:hover { border-color: var(--border-active); }
+
+        .tech-card .tech-icon { font-size: clamp(1rem, 1.8vw, 1.5rem); }
+
+        .tech-card .tech-name {
+            font-family: var(--font-display);
+            font-size: clamp(0.75rem, 1.2vw, 1rem);
+            font-weight: 600;
+        }
+
+        .tech-card .tech-desc {
+            font-size: var(--caption-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .tech-accent-green { border-left: 2px solid var(--accent-green); }
+        .tech-accent-amber { border-left: 2px solid var(--accent-amber); }
+        .tech-accent-purple { border-left: 2px solid var(--accent-purple); }
+        .tech-accent-orange { border-left: 2px solid var(--accent-orange); }
+        .tech-accent-blue { border-left: 2px solid var(--accent-blue); }
+        .tech-accent-cyan { border-left: 2px solid var(--accent-cyan); }
+
+        /* ===========================================
+           SLIDE 12 — CLOSING
+           =========================================== */
+        .closing-slide .slide-content {
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+        }
+
+        .value-props {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 1vh, 0.75rem);
+            text-align: left;
+            max-width: min(80vw, 650px);
+        }
+
+        .value-prop {
+            display: flex;
+            align-items: flex-start;
+            gap: clamp(0.5rem, 1vw, 0.75rem);
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+        }
+
+        .value-prop .label {
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--accent-cyan);
+            white-space: nowrap;
+            min-width: clamp(50px, 6vw, 65px);
+        }
+
+        .closing-tagline {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-dim);
+            margin-top: clamp(0.5rem, 1vh, 1rem);
+        }
+
+        /* ===========================================
+           RESPONSIVE — SHORT VIEWPORTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.5rem, 5vw, 3rem);
+                --h2-size: clamp(1.1rem, 3vw, 2rem);
+            }
+            .slide-image { max-height: min(50vh, 380px); }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .brand-badge { display: none; }
+            .slide-image { max-height: min(45vh, 320px); }
+            .hero-icon::after { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 4vw, 2rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.5rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .slide-image { max-height: min(40vh, 250px); }
+        }
+
+        /* RESPONSIVE — NARROW */
+        @media (max-width: 700px) {
+            .cards-row { grid-template-columns: 1fr; max-width: min(90vw, 400px); }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .flow-steps { flex-wrap: wrap; }
+            .flow-arrow { display: none; }
+        }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" role="progressbar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" aria-live="polite">
+        <span class="counter-current">01</span>
+        <span class="counter-sep" style="color: var(--text-dim)">/</span>
+        <span class="counter-total">13</span>
+    </div>
+
+    <!-- ===========================================
+         SLIDE 1 — TITLE HERO
+         =========================================== -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="scan-line"></div>
+        <div class="slide-content">
+            <div class="hero-icon reveal">🐐</div>
+            <h1 class="reveal"><span class="gradient-text">GoatGuard</span></h1>
+            <p class="subtitle reveal">GOAT Network 首个 AI 安全审计 Agent</p>
+            <div class="badge-row reveal">
+                <span class="badge">🤖 AI-Powered</span>
+                <span class="badge">💰 x402 Payment</span>
+                <span class="badge">🆔 ERC-8004 Identity</span>
+            </div>
+        </div>
+        <div class="keyboard-hint">← → 方向键翻页 · Space 下一页</div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 2 — PROBLEM
+         =========================================== -->
+    <section class="slide problem-slide" aria-label="Problem">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">谁来守护<span class="text-cyan">智能合约</span>安全？</h2>
+            <ul class="problem-list">
+                <li class="reveal"><span class="icon">⚡</span><span>GOAT Network 生态快速增长，<strong>新合约每天部署</strong></span></li>
+                <li class="reveal"><span class="icon">💸</span><span>传统审计公司：<strong>$10,000+</strong> 起步，等待 <strong>2-4 周</strong></span></li>
+                <li class="reveal"><span class="icon">🔓</span><span>新项目难以获得专业安全审计，<strong>用户资产面临风险</strong></span></li>
+                <li class="reveal"><span class="icon">🤔</span><span>需要一个<strong>快速、低成本、专业</strong>的安全审计方案</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 3 — SOLUTION (3 PILLARS)
+         =========================================== -->
+    <section class="slide solution-slide" aria-label="Solution">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">AI × 链上支付 × <span class="text-purple">链上身份</span></h2>
+            <div class="cards-row">
+                <div class="feature-card card-accent-cyan reveal-scale" style="transition-delay: 0.15s">
+                    <span class="card-icon">🤖</span>
+                    <h3>AI 自主审计</h3>
+                    <p>SWC 扫描 + AI 代码审计 + 代币经济学分析，5 分钟出三级报告</p>
+                </div>
+                <div class="feature-card card-accent-amber reveal-scale" style="transition-delay: 0.25s">
+                    <span class="card-icon">💰</span>
+                    <h3>x402 原生付费</h3>
+                    <p>BTC 链上微支付，0.000001 BTC/次，无需注册、无需 API Key</p>
+                </div>
+                <div class="feature-card card-accent-purple reveal-scale" style="transition-delay: 0.35s">
+                    <span class="card-icon">🆔</span>
+                    <h3>ERC-8004 身份</h3>
+                    <p>审计次数和信誉分链上可查，每份报告可追溯</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 4 — HOW IT WORKS
+         =========================================== -->
+    <section class="slide flow-slide" aria-label="How it works">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">客户使用流程</h2>
+            <div class="flow-steps">
+                <div class="flow-step reveal" style="transition-delay: 0.15s">
+                    <span class="step-num">01</span>
+                    <span class="step-icon">📝</span>
+                    <span class="step-label">Submit</span>
+                    <span class="step-desc">合约地址 + 邮箱</span>
+                </div>
+                <span class="flow-arrow reveal" style="transition-delay: 0.2s">→</span>
+                <div class="flow-step reveal" style="transition-delay: 0.25s">
+                    <span class="step-num">02</span>
+                    <span class="step-icon">💳</span>
+                    <span class="step-label">Pay</span>
+                    <span class="step-desc">MetaMask 0.000001 BTC</span>
+                </div>
+                <span class="flow-arrow reveal" style="transition-delay: 0.3s">→</span>
+                <div class="flow-step reveal" style="transition-delay: 0.35s">
+                    <span class="step-num">03</span>
+                    <span class="step-icon">🤖</span>
+                    <span class="step-label">Audit</span>
+                    <span class="step-desc">AI Agent ~5 分钟</span>
+                </div>
+                <span class="flow-arrow reveal" style="transition-delay: 0.4s">→</span>
+                <div class="flow-step reveal" style="transition-delay: 0.45s">
+                    <span class="step-num">04</span>
+                    <span class="step-icon">📊</span>
+                    <span class="step-label">Report</span>
+                    <span class="step-desc">邮件 + 飞书交付</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 5 — DEMO: WEB UI LANDING
+         =========================================== -->
+    <section class="slide image-slide" aria-label="Demo: Web UI">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">GoatGuard <span class="text-cyan">Web UI</span></h2>
+            <div class="image-wrapper reveal" style="transition-delay: 0.15s">
+                <img src="demo-play-assets/01-landing.png" alt="GoatGuard Landing Page" class="slide-image">
+            </div>
+            <p class="caption reveal" style="transition-delay: 0.25s">客户打开浏览器即可使用 · 多源输入 · 结构化报告</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 6 — DEMO: x402 PAYMENT
+         =========================================== -->
+    <section class="slide image-slide" aria-label="Demo: Payment">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">x402 链上微支付 — <span class="text-amber">0.000001 BTC</span></h2>
+            <div class="image-wrapper reveal" style="transition-delay: 0.15s">
+                <img src="demo-play-assets/04-metamask-confirm.png" alt="MetaMask Payment Confirmation" class="slide-image">
+            </div>
+            <p class="caption reveal" style="transition-delay: 0.25s">MetaMask 连接 GOAT Testnet3 · 链上 BTC 转账 · tx hash 可查</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 7 — DEMO: AUDIT IN PROGRESS
+         =========================================== -->
+    <section class="slide image-slide" aria-label="Demo: AI Audit">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">AI Agent <span class="text-green">自主审计</span></h2>
+            <div class="image-wrapper reveal" style="transition-delay: 0.15s">
+                <img src="demo-play-assets/05-audit-progress.png" alt="Audit In Progress" class="slide-image">
+            </div>
+            <p class="caption reveal" style="transition-delay: 0.25s">自动解析输入 → 拉取源码 → SWC 扫描 + AI 代码审计 → ~5 分钟</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 8 — AUDIT ENGINE CAPABILITIES
+         =========================================== -->
+    <section class="slide" aria-label="Audit Engine Capabilities">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">安全审计<span class="text-cyan">引擎</span></h2>
+            <div class="capability-blocks">
+                <div class="capability-block block-accent-green reveal" style="transition-delay: 0.1s">
+                    <div class="cap-header">
+                        <span class="cap-icon">🌐</span>
+                        <h3>多链覆盖</h3>
+                    </div>
+                    <div class="pills-row">
+                        <span class="pill pill-chain">EVM 兼容链</span>
+                        <span class="pill pill-chain">Solana</span>
+                        <span class="pill pill-chain">SUI</span>
+                        <span class="pill pill-chain">SVM 兼容链</span>
+                    </div>
+                </div>
+                <div class="capability-block block-accent-cyan reveal" style="transition-delay: 0.2s">
+                    <div class="cap-header">
+                        <span class="cap-icon">🛡️</span>
+                        <h3>多引擎智能交叉覆盖</h3>
+                    </div>
+                    <div class="pills-row">
+                        <span class="pill pill-engine">GoPlus</span>
+                        <span class="pill pill-engine">Slither</span>
+                        <span class="pill pill-engine">Mythril</span>
+                        <span class="pill pill-engine">Aderyn</span>
+                        <span class="pill pill-engine">MythX</span>
+                        <span class="pill pill-engine">halmos</span>
+                        <span class="pill pill-engine">cargo-geiger</span>
+                        <span class="pill pill-engine">Move</span>
+                    </div>
+                    <p class="cap-note"><span class="pill pill-ai">AI 二次研判</span> 全量安全审查逻辑分析 + 多引擎扫描数据交叉验证</p>
+                </div>
+                <div class="capability-block block-accent-amber reveal" style="transition-delay: 0.3s">
+                    <div class="cap-header">
+                        <span class="cap-icon">📊</span>
+                        <h3>链上原生数据</h3>
+                    </div>
+                    <p class="cap-note">代币合约数据<strong>直接链上 RPC 获取</strong>，非第三方 API 转手，确保数据源头准确可信</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 9 — DEMO: FEISHU INTERNAL
+         =========================================== -->
+    <section class="slide image-slide" aria-label="Demo: Feishu Monitoring">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">团队飞书<span class="text-blue"> 实时监控</span></h2>
+            <div class="image-wrapper reveal" style="transition-delay: 0.15s">
+                <img src="demo-play-assets/06-feishu-start.png" alt="Feishu Team Notification" class="slide-image">
+            </div>
+            <p class="caption reveal" style="transition-delay: 0.25s">Webhook 自动推送 · 任务 ID + 客户邮箱 + 付款交易 · 全程透明</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 9 — DEMO: EMAIL REPORT
+         =========================================== -->
+    <section class="slide image-slide" aria-label="Demo: Email Report">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">客户邮件收到<span class="text-purple"> 完整报告</span></h2>
+            <div class="image-wrapper reveal" style="transition-delay: 0.15s">
+                <img src="demo-play-assets/07-email-report.png" alt="Email Audit Report" class="slide-image">
+            </div>
+            <p class="caption reveal" style="transition-delay: 0.25s">Risk Summary + Token Assessment + Audit Checklist · 3 份 Markdown 附件</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 10 — DEMO: REPORT QUALITY
+         =========================================== -->
+    <section class="slide image-slide" aria-label="Demo: Report Quality">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">专业<span class="text-red">三级</span>审计报告</h2>
+            <div class="image-wrapper reveal" style="transition-delay: 0.15s">
+                <img src="demo-play-assets/08-risk-summary.png" alt="Risk Summary Report" class="slide-image">
+            </div>
+            <p class="caption reveal" style="transition-delay: 0.25s">评分 + 评级 + 漏洞详情 + 修复建议 · SWC Registry + Solodit Checklist</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 11 — TECH STACK
+         =========================================== -->
+    <section class="slide" aria-label="Tech Stack">
+        <span class="brand-badge"><span class="goat-icon">🐐</span> GoatGuard</span>
+        <div class="slide-content">
+            <h2 class="reveal">技术栈</h2>
+            <div class="tech-grid">
+                <div class="tech-card tech-accent-green reveal-scale" style="transition-delay: 0.1s">
+                    <span class="tech-icon">🧠</span>
+                    <span class="tech-name">OpenClaw</span>
+                    <span class="tech-desc">AI Agent 框架</span>
+                </div>
+                <div class="tech-card tech-accent-amber reveal-scale" style="transition-delay: 0.15s">
+                    <span class="tech-icon">💰</span>
+                    <span class="tech-name">x402 Protocol</span>
+                    <span class="tech-desc">HTTP 原生支付协议</span>
+                </div>
+                <div class="tech-card tech-accent-purple reveal-scale" style="transition-delay: 0.2s">
+                    <span class="tech-icon">🆔</span>
+                    <span class="tech-name">ERC-8004</span>
+                    <span class="tech-desc">链上 Agent 身份标准</span>
+                </div>
+                <div class="tech-card tech-accent-orange reveal-scale" style="transition-delay: 0.25s">
+                    <span class="tech-icon">🔨</span>
+                    <span class="tech-name">Foundry</span>
+                    <span class="tech-desc">智能合约开发工具链</span>
+                </div>
+                <div class="tech-card tech-accent-blue reveal-scale" style="transition-delay: 0.3s">
+                    <span class="tech-icon">📋</span>
+                    <span class="tech-name">Feishu MCP</span>
+                    <span class="tech-desc">文档 + 表格 + 通知</span>
+                </div>
+                <div class="tech-card tech-accent-cyan reveal-scale" style="transition-delay: 0.35s">
+                    <span class="tech-icon">🛡️</span>
+                    <span class="tech-name">GoPlus API</span>
+                    <span class="tech-desc">链上安全风险数据</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 12 — CLOSING
+         =========================================== -->
+    <section class="slide closing-slide" aria-label="Closing">
+        <div class="scan-line" style="animation-delay: 2s"></div>
+        <div class="slide-content">
+            <div class="hero-icon reveal" style="font-size: clamp(2rem, 4vw, 3rem)">🐐</div>
+            <h1 class="reveal"><span class="gradient-text">Security-as-a-Service</span></h1>
+            <div class="value-props">
+                <div class="value-prop reveal">
+                    <span class="label">对客户</span>
+                    <span>打开网页、填地址、付 1 毛钱，5 分钟报告送到邮箱</span>
+                </div>
+                <div class="value-prop reveal">
+                    <span class="label">对生态</span>
+                    <span>让 GOAT 上每个合约都有机会获得专业安全审计</span>
+                </div>
+                <div class="value-prop reveal">
+                    <span class="label">对行业</span>
+                    <span>Agent 自主审计、自主收费、自主交付</span>
+                </div>
+            </div>
+            <p class="closing-tagline reveal">GoatGuard · Powered by GOAT Network</p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE PRESENTATION CONTROLLER
+         =========================================== -->
+    <script>
+    class SlidePresentation {
+        constructor() {
+            this.slides = document.querySelectorAll('.slide');
+            this.currentSlide = 0;
+            this.isScrolling = false;
+            this.totalSlides = this.slides.length;
+            this.init();
+        }
+
+        init() {
+            this.progressBar = document.querySelector('.progress-bar');
+            this.counterEl = document.querySelector('.counter-current');
+            document.querySelector('.counter-total').textContent =
+                String(this.totalSlides).padStart(2, '0');
+            this.setupIntersectionObserver();
+            this.setupKeyboardNav();
+            this.setupWheelNav();
+            this.setupTouchNav();
+            this.setupNavDots();
+            this.slides[0].classList.add('visible');
+            this.updateUI();
+        }
+
+        setupIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        this.currentSlide = [...this.slides].indexOf(entry.target);
+                        this.updateUI();
+                    }
+                });
+            }, { threshold: 0.5 });
+            this.slides.forEach(s => observer.observe(s));
+        }
+
+        setupKeyboardNav() {
+            document.addEventListener('keydown', (e) => {
+                const map = {
+                    ArrowDown: 1, ArrowRight: 1, ' ': 1, PageDown: 1,
+                    ArrowUp: -1, ArrowLeft: -1, PageUp: -1,
+                };
+                if (e.key === 'Home') { e.preventDefault(); this.goTo(0); return; }
+                if (e.key === 'End') { e.preventDefault(); this.goTo(this.totalSlides - 1); return; }
+                const dir = map[e.key];
+                if (dir !== undefined) {
+                    e.preventDefault();
+                    this.goTo(this.currentSlide + dir);
+                }
+            });
+        }
+
+        setupWheelNav() {
+            document.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (this.isScrolling) return;
+                this.isScrolling = true;
+                this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+                setTimeout(() => { this.isScrolling = false; }, 700);
+            }, { passive: false });
+        }
+
+        setupTouchNav() {
+            let startY = 0;
+            document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; });
+            document.addEventListener('touchend', (e) => {
+                const diff = startY - e.changedTouches[0].clientY;
+                if (Math.abs(diff) > 50) this.goTo(this.currentSlide + (diff > 0 ? 1 : -1));
+            });
+        }
+
+        setupNavDots() {
+            const container = document.querySelector('.nav-dots');
+            this.slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.classList.add('nav-dot');
+                dot.setAttribute('aria-label', `Slide ${i + 1}`);
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => this.goTo(i));
+                container.appendChild(dot);
+            });
+            this.dots = container.querySelectorAll('.nav-dot');
+        }
+
+        goTo(index) {
+            if (index < 0 || index >= this.totalSlides) return;
+            this.currentSlide = index;
+            this.slides[index].scrollIntoView({ behavior: 'smooth' });
+            this.updateUI();
+        }
+
+        updateUI() {
+            const pct = (this.currentSlide / (this.totalSlides - 1)) * 100;
+            if (this.progressBar) this.progressBar.style.width = `${pct}%`;
+            if (this.counterEl) this.counterEl.textContent =
+                String(this.currentSlide + 1).padStart(2, '0');
+            if (this.dots) {
+                this.dots.forEach((d, i) => d.classList.toggle('active', i === this.currentSlide));
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+    </script>
+</body>
+</html>

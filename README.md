@@ -168,6 +168,10 @@ The `sample-reports/` directory contains real audit outputs demonstrating GoatGu
 - **goat-coin/** — GOAT Coin token audit (scored 92/100, S-tier)
 - **delegation/** — Delegation contract security evaluation
 
+## Author
+
+**Ocean** — Built at OpenClaw Hackathon 2025
+
 ## License
 
 MIT
